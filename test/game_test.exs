@@ -84,4 +84,50 @@ defmodule ExMon.GameTest do
       assert expected_response == Game.info()
     end
   end
+
+  describe "player/0" do
+    test "returns the player info" do
+      player = Player.build("Lucas", :chute, :soco, :cura)
+      computer = Player.build("Enemy", :chute, :soco, :cura)
+
+      Game.start(computer, player)
+
+      expected_response = %Player{
+        name: "Lucas",
+        life: 100,
+        moves: %{move_avg: :soco, move_rnd: :chute, move_heal: :cura}
+      }
+
+      assert expected_response == Game.player()
+    end
+  end
+
+  describe "turn/0" do
+    test "returns the current turn" do
+      player = Player.build("Lucas", :chute, :soco, :cura)
+      computer = Player.build("Enemy", :chute, :soco, :cura)
+
+      Game.start(computer, player)
+
+      assert :player == Game.turn()
+    end
+  end
+
+  describe "fetch_player/1" do
+    test "returns the player info" do
+      player = Player.build("Lucas", :chute, :soco, :cura)
+      computer = Player.build("Enemy", :chute, :soco, :cura)
+
+      Game.start(computer, player)
+
+      expected_response = %Player{
+        name: "Lucas",
+        life: 100,
+        moves: %{move_avg: :soco, move_rnd: :chute, move_heal: :cura}
+      }
+
+      assert expected_response == Game.fetch_player(:player)
+      assert expected_response != Game.fetch_player(:computer)
+    end
+  end
 end
