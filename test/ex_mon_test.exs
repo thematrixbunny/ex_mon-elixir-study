@@ -33,10 +33,17 @@ defmodule ExMonTest do
   end
 
   describe "make_move/1" do
-    test "when the move is valid, do the move and the cmputer makes a move" do
+    setup do
       player = Player.build("Lucas", :chute, :soco, :cura)
-      ExMon.start_game(player)
 
+      capture_io(fn ->
+        ExMon.start_game(player)
+      end)
+      # {:ok, player: player}
+      :ok
+    end
+
+    test "when the move is valid, do the move and the cmputer makes a move" do
       messages =
         capture_io(fn ->
           ExMon.make_move(:chute)
@@ -47,5 +54,39 @@ defmodule ExMonTest do
       assert messages =~ "It's player turn"
       assert messages =~ "status: :continue"
     end
+
+    test "when the move is invalid, returns an error message" do
+      messages =
+        capture_io(fn ->
+          ExMon.make_move(:wrong)
+        end)
+
+      assert messages =~ "Invalid move: wrong"
+    end
   end
+
+  # Criar os testes dos módulos remanescentes
+  describe "game_over" do
+    setup do
+      player = Player.build("Lucas", :chute, :soco, :cura)
+      capture_io(fn -> ExMon.start_game(player) end)
+      :ok
+    end
+
+    test "prints the game over message when a player loses all life" do
+      # Simula movimentos até o jogo acabar
+      # Forçando a vida do computador chegar a zero
+      ExMon.Game.info()
+      |> Map.update!(:computer, fn comp -> %{comp | life: 0} end)
+      |> ExMon.Game.update()
+
+      messages =
+        capture_io(fn ->
+          ExMon.make_move(:chute)
+        end)
+
+      assert messages =~ "status: :game_over"
+      assert messages =~ "The game is over"
+    end
+  end # Teste de game_over
 end
