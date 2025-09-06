@@ -4,7 +4,9 @@ defmodule ExMon.Game do
   use Agent
 
   def start(computer, player) do
-    initial_value = %{computer: computer, player: player, turn: :player, status: :started}
+    # Randomly choose who starts: :player or :computer
+    initial_turn = Enum.random([:player, :computer])
+    initial_value = %{computer: computer, player: player, turn: initial_turn, status: :started}
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end # Função para iniciar o jogo
 
@@ -21,7 +23,7 @@ defmodule ExMon.Game do
   def fetch_player(player), do: Map.get(info(), player) # Busca info do jogador
 
   defp update_game_status(%{player: %Player{life: player_life}, computer: %Player{life: computer_life}} = state)
-    when player_life == 0 or computer_life == 0, 
+    when player_life == 0 or computer_life == 0,
     do: Map.put(state, :status, :game_over)
 
   defp update_game_status(state) do

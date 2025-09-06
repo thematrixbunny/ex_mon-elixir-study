@@ -1,8 +1,9 @@
 defmodule ExMon.Game.Status do
 
-  def print_round_message(%{status: :started} = info) do
+  def print_round_message(%{status: :started, turn: turn} = info) do
     IO.puts("\n===== The game is started! =====\n")
     IO.inspect(info)
+    IO.puts("Who starts: #{turn}")
     IO.puts("--------------------------------")
   end # Função que imprime a mensagem de início do jogo
 
